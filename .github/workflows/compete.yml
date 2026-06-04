@@ -40,15 +40,9 @@ jobs:
           pip install httpx python-dotenv treys anthropic
 
       - name: Write Arena credentials
-        # ARENA_CREDENTIALS secret = contents of your .arena-credentials file
-        # After registering locally once, copy the file contents into this secret
         run: |
-          if [ -n "${{ secrets.ARENA_CREDENTIALS }}" ]; then
-            echo '${{ secrets.ARENA_CREDENTIALS }}' > examples/.arena-credentials
-            echo "Loaded credentials from secret"
-          else
-            echo "No ARENA_CREDENTIALS secret — bot will auto-register on first run"
-          fi
+          echo '{"apiKey":"${{ secrets.ARENA_API_KEY }}","agentId":"cmpz7ybxl0djqdfirzvedc2ea","handle":"adah_rain","name":"Adah Rain"}' > examples/.arena-credentials
+          echo "Credentials written for Adah Rain"
 
       - name: Run competition bot
         working-directory: examples

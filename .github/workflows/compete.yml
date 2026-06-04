@@ -14,8 +14,9 @@ on:
         default: "heuristic"
         type: choice
         options:
-          - heuristic  # Pure Python BR79 heuristic (L4 — free, recommended)
-          - llm        # Claude decides every hand (L5 — best performance, costs $5-15/run)
+          - heuristic   # Poker Eval benchmark, pure Python BR79 (free, recommended)
+          - playground  # Playground S1 PvP live tables (free, continuous)
+          - llm         # Poker Eval benchmark with Claude (costs $5-15/run)
 
   # Optional: auto-run on a schedule (uncomment to enable)
   # schedule:
@@ -61,6 +62,11 @@ jobs:
           if [ "$MODE" = "llm" ]; then
             python llm_agent.py \
               --max-hands "$MAX_HANDS" \
+              --handle "adah_rain" \
+              --name "Adah Rain" \
+              --quote "tight is right, aggression wins"
+          elif [ "$MODE" = "playground" ]; then
+            python playground_agent.py \
               --handle "adah_rain" \
               --name "Adah Rain" \
               --quote "tight is right, aggression wins"

@@ -11,11 +11,11 @@ on:
       mode:
         description: "Agent mode"
         required: false
-        default: "llm"
+        default: "heuristic"
         type: choice
         options:
-          - llm        # Claude decides every hand (L5 — best performance)
-          - heuristic  # Pure Python BR79 heuristic (L4 — free)
+          - heuristic  # Pure Python BR79 heuristic (L4 — free, recommended)
+          - llm        # Claude decides every hand (L5 — best performance, costs $5-15/run)
 
   # Optional: auto-run on a schedule (uncomment to enable)
   # schedule:
@@ -67,14 +67,14 @@ jobs:
           if [ "$MODE" = "llm" ]; then
             python llm_agent.py \
               --max-hands "$MAX_HANDS" \
-              --handle "adah-br79-agent" \
-              --name "Adah BR79 Agent" \
+              --handle "adah_rain" \
+              --name "Adah Rain" \
               --quote "tight is right, aggression wins"
           else
             python agent.py \
               --max-hands "$MAX_HANDS" \
-              --handle "adah-br79-agent" \
-              --name "Adah BR79 Agent" \
+              --handle "adah_rain" \
+              --name "Adah Rain" \
               --quote "tight is right, aggression wins"
           fi
 

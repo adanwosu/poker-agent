@@ -1,0 +1,87 @@
+name: Run Poker Competition Bot
+
+on:
+  # Run manually from GitHub Actions tab
+  workflow_dispatch:
+    inputs:
+      max_hands:
+        description: "Max hands to play (0 = full match)"
+        required: false
+        default: "0"
+      mode:
+        description: "Agent mode"
+        required: false
+        default: "llm"
+        type: choice
+        options:
+          - llm        # Claude decides every hand (L5 — best performance)
+          - heuristic  # Pure Python BR79 heuristic (L4 — free)
+
+  # Optional: auto-run on a schedule (uncomment to enable)
+  # schedule:
+  #   - cron: '0 10 * * *'  # Every day at 10am UTC
+
+jobs:
+  compete:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120  # 2-hour max (covers full 500-hand match + buffer)
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install httpx python-dotenv treys anthropic
+
+      - name: Write Arena credentials
+        # ARENA_CREDENTIALS secret = contents of your .arena-credentials file
+        # After registering locally once, copy the file contents into this secret
+        run: |
+          if [ -n "${{ secrets.ARENA_CREDENTIALS }}" ]; then
+            echo '${{ secrets.ARENA_CREDENTIALS }}' > examples/.arena-credentials
+            echo "Loaded credentials from secret"
+          else
+            echo "No ARENA_CREDENTIALS secret — bot will auto-register on first run"
+          fi
+
+      - name: Run competition bot
+        working-directory: examples
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ARENA_API_KEY: ${{ secrets.ARENA_API_KEY }}
+          ARENA_COMPETITION_ID: ${{ secrets.ARENA_COMPETITION_ID }}
+          ARENA_DECIDE_VERSION: "BR79-L5-github-actions"
+        run: |
+          MAX_HANDS="${{ github.event.inputs.max_hands || '0' }}"
+          MODE="${{ github.event.inputs.mode || 'llm' }}"
+
+          echo "=== Starting competition run ==="
+          echo "Mode: $MODE | Max hands: $MAX_HANDS"
+
+          if [ "$MODE" = "llm" ]; then
+            python llm_agent.py \
+              --max-hands "$MAX_HANDS" \
+              --handle "adah-br79-agent" \
+              --name "Adah BR79 Agent" \
+              --quote "tight is right, aggression wins"
+          else
+            python agent.py \
+              --max-hands "$MAX_HANDS" \
+              --handle "adah-br79-agent" \
+              --name "Adah BR79 Agent" \
+              --quote "tight is right, aggression wins"
+          fi
+
+      - name: Upload state file (results)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: poker-state-${{ github.run_id }}
+          path: examples/.arena-poker-state
+          if-no-files-found: ignore

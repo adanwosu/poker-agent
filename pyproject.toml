@@ -1,0 +1,24 @@
+[project]
+name = "arena-pokerkit-competition"
+version = "0.18.1"
+description = "Competition poker agent for dev.fun Arena — L4 heuristic + L5 Claude"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+dependencies = [
+    "httpx>=0.27",
+    "python-dotenv>=1.0",
+    "treys>=0.1.8",
+    "pokerkit>=0.5",
+    "anthropic>=0.40",
+]
+
+[project.optional-dependencies]
+openai = ["openai>=1.0"]
+dev = ["pytest>=8", "respx>=0.21"]
+
+[project.scripts]
+pokerkit = "examples.cli:main"
+
+[tool.uv]
+package = false

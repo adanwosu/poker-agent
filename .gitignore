@@ -1,0 +1,18 @@
+# Arena credentials — keep private, never commit
+examples/.arena-credentials
+examples/.arena-credentials.rejected
+examples/.arena-poker-state
+
+# Environment variables
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# Misc
+.DS_Store
+replay.html

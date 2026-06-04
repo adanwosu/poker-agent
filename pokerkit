@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# pokerkit — branded CLI wrapper
+# Usage: ./pokerkit run | llm | test | version
+set -e
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
+
+if command -v uv &>/dev/null; then
+    uv run python -m examples.cli "$@"
+else
+    python3 -m examples.cli "$@"
+fi

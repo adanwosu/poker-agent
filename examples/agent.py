@@ -1132,15 +1132,25 @@ def run_live_benchmark(args: argparse.Namespace,
             if e.status == 402:
                 print("[arena-pokerkit] entry fee required", file=sys.stderr)
                 return 3
-            raise
+            if e.status == 409:
+                # Match already exists — resume it by fetching current status
+                print("[arena-pokerkit] match already exists — resuming existing benchmark")
+                try:
+                    status_resp = client.get(
+                        f"/texas/benchmark/status?competitionId={competition_id}")
+                    start_resp = status_resp if isinstance(status_resp, dict) else {}
+                except ArenaError:
+                    start_resp = {}
+            else:
+                raise
         if not isinstance(start_resp, dict):
             raise ArenaError(0, str(start_resp)[:200], "benchmark/start malformed")
         match = start_resp.get("match") or {}
         if match.get("phase") in terminal_phases or match.get("status") in terminal_statuses:
             print(f"[arena-pokerkit] already terminal: {json.dumps(match, sort_keys=True)}")
             return 0
-        print(f"[arena-pokerkit] benchmark started: phase={match.get('phase')} "
-              f"target={match.get('targetHands')}")
+        print(f"[arena-pokerkit] benchmark started/resumed: phase={match.get('phase')} "
+              f"completed={match.get('completedHands')} target={match.get('targetHands')}")
         return _run_benchmark_loop(
             client=client, args=args, competition_id=competition_id,
             decide_fn=decide_fn, retrieve_fn=retrieve_solver_context,

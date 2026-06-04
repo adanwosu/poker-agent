@@ -204,13 +204,16 @@ def _call_llm(system: str, user: str, max_tokens: int,
             import anthropic  # type: ignore
             client = anthropic.Anthropic()
             resp = client.messages.create(
-                model=resolved_model or "claude-sonnet-4-6",  # best available model
-
+                model=resolved_model or "claude-sonnet-4-6",
                 max_tokens=max_tokens,
                 system=system,
-                messages=[{"role": "user", "content": user}])
-            return "".join(getattr(b, "text", "") for b in resp.content
-                           if getattr(b, "type", None) == "text").strip()
+                messages=[
+                    {"role": "user", "content": user},
+                    {"role": "assistant", "content": "{"},  # prefill — forces JSON-only output
+                ])
+            raw = "".join(getattr(b, "text", "") for b in resp.content
+                          if getattr(b, "type", None) == "text").strip()
+            return "{" + raw  # re-attach the prefill character
         except Exception as e:
             print(f"[arena-pokerkit] Anthropic call failed: {e}", file=sys.stderr)
             return None

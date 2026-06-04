@@ -91,7 +91,7 @@ class ArenaError(Exception):
 
 
 class ArenaClient:
-    def __init__(self, base_url: str, api_key: Optional[str] = None, timeout: float = 30.0):
+    def __init__(self, base_url: str, api_key: Optional[str] = None, timeout: float = 15.0):
         self.base = base_url.rstrip("/")
         self.api_key = api_key
         self._client = httpx.Client(timeout=timeout, trust_env=False)

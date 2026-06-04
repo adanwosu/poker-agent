@@ -59,7 +59,8 @@ def run_playground(args: argparse.Namespace) -> int:
     load_dotenv()
     api_key = os.environ.get("ARENA_API_KEY") or None
     base = os.environ.get("ARENA_API_BASE", DEFAULT_BASE)
-    competition_id = args.competition_id or os.environ.get("ARENA_COMPETITION_ID") or PLAYGROUND_COMPETITION_ID
+    # Always use the playground competition — ignore ARENA_COMPETITION_ID (that points to Eval)
+    competition_id = args.competition_id or PLAYGROUND_COMPETITION_ID
 
     client = ArenaClient(base, api_key=api_key)
     rng = random.Random()

@@ -87,10 +87,14 @@ def run_playground(args: argparse.Namespace) -> int:
             try:
                 join_resp = client.post("/texas/join", {"competitionId": competition_id})
             except ArenaError as e:
-                if e.status == 402:
+                if e.status == 409:
+                    # Already in matchmaking queue — just start polling
+                    _emit("already in matchmaking queue — polling for table seat...")
+                    join_resp = {}
+                elif e.status == 402:
                     _emit("entry fee required — playground is not free right now")
                     return 3
-                if e.status == 403:
+                elif e.status == 403:
                     _emit("agent must be X-verified and claimed to enter this competition")
                     return 4
                 if e.status == 400:

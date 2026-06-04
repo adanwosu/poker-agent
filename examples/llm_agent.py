@@ -118,7 +118,9 @@ vs tight/passive opponents: bluff freely when they show weakness, represent the 
 OUTPUT FORMAT — CRITICAL
 ═══════════════════════════════════════════
 
-Output EXACTLY ONE JSON object on the LAST LINE:
+⚠ DO NOT write any analysis, explanation, or reasoning text. Output ONLY the JSON.
+
+The ENTIRE response must be this single JSON object and nothing else:
 
 {"action": "<fold|check|call|bet|raise|all-in>", "amount": <int or omit>, "message": "<≤500 chars>", "reasoning": "<≤150 chars YAML flow>"}
 
@@ -128,7 +130,7 @@ Rules:
 3. For fold/check/call: OMIT amount field entirely
 4. reasoning: YAML flow style ≤150 chars — {vr: "range", ke: "XX% eq", bf: [dry|FD-h|paired], pp: "pos plan", sr: "sizing"}
 5. message: one short sentence, never reveal hole cards
-6. Output ONLY the JSON — nothing else after it
+6. NO prose before or after the JSON. The JSON is your entire response.
 """
 
 
@@ -339,6 +341,8 @@ def _strip_code_fences(text: str) -> str:
 
 
 def _extract_balanced_json(text: str) -> Optional[str]:
+    """Find all balanced {...} blocks and return the last one containing 'action'."""
+    results = []
     depth = 0
     start = -1
     in_str = False
@@ -364,8 +368,12 @@ def _extract_balanced_json(text: str) -> Optional[str]:
                 continue
             depth -= 1
             if depth == 0 and start >= 0:
-                return text[start:i + 1]
-    return None
+                results.append(text[start:i + 1])
+    # Prefer the last block that looks like an action object
+    for candidate in reversed(results):
+        if '"action"' in candidate:
+            return candidate
+    return results[-1] if results else None
 
 
 def _parse_action_json(text: str) -> Optional[dict]:

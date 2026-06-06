@@ -71,15 +71,23 @@ STATUS_REFRESH_S = 8.0
 
 # Top 20% of hands for 6-max — BlackRain79's recommended opening range.
 _BR79_OPEN_RANGE: set[str] = {
-    # ALL pocket pairs (set value + pair strength)
+    # All pocket pairs
     "AA", "KK", "QQ", "JJ", "TT", "99", "88", "77", "66", "55", "44", "33", "22",
-    # Suited aces (nut flush draws + strong aces)
+    # Suited aces
     "AKs", "AQs", "AJs", "ATs", "A9s", "A8s", "A7s", "A6s", "A5s", "A4s", "A3s", "A2s",
-    # Suited broadways
-    "KQs", "KJs", "KTs", "QJs", "QTs", "JTs",
-    # Suited connectors (playability, straight + flush draws)
-    "J9s", "T9s", "T8s", "98s", "97s", "87s", "86s", "76s", "75s", "65s",
-    # Offsuit premium hands
+    # Suited kings
+    "KQs", "KJs", "KTs", "K9s", "K8s",
+    # Suited queens — added Q9s
+    "QJs", "QTs", "Q9s",
+    # Suited jacks
+    "JTs", "J9s",
+    # Suited tens
+    "T9s",
+    # Suited nines
+    "98s",
+    # Suited eights
+    "87s",
+    # Offsuit premiums
     "AKo", "AQo", "AJo", "ATo",
     "KQo", "KJo",
     "QJo",
@@ -97,7 +105,8 @@ _BR79_FLAT_HANDS: set[str] = {
     "TT", "99", "88", "77", "66", "55", "44", "33", "22",
     "AJo", "ATo", "KQo", "KJo", "QJo",
     "KQs", "KJs", "KTs", "QJs", "QTs",
-    "JTs", "T9s", "98s", "87s", "76s", "65s",
+    "JTs", "T9s", "98s", "87s",
+    "K9s", "K8s", "Q9s",
     "A9s", "A8s", "A7s", "A6s", "A5s", "A4s", "A3s", "A2s",
 }
 
@@ -116,6 +125,7 @@ _PREFLOP_EQUITY = {
     "QJs": 0.60, "QTs": 0.59, "JTs": 0.58, "J9s": 0.56,
     "T9s": 0.54, "T8s": 0.53, "98s": 0.52, "97s": 0.51,
     "87s": 0.52, "86s": 0.50, "76s": 0.50, "75s": 0.49, "65s": 0.49,
+    "K8s": 0.57, "Q9s": 0.57,
     "AKo": 0.65, "AQo": 0.64, "AJo": 0.63, "ATo": 0.62,
     "KQo": 0.61, "KJo": 0.60, "QJo": 0.58,
 }
